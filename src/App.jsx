@@ -9,19 +9,19 @@ import OverviewDashboard from './components/OverviewDashboard';
 import './App.css'; // Import the CSS file
 
 function App() {
-    // State to hold all the goals
+ 
     const [goals, setGoals] = useState([]);
     // State to control which form is visible for editing
-    const [editingGoal, setEditingGoal] = useState(null); // Holds the goal object being edited
+    const [editingGoal, setEditingGoal] = useState(null); 
     // State to control which form is visible for depositing
-    const [depositingGoalId, setDepositingGoalId] = useState(null); // Holds the ID of the goal for deposit
+    const [depositingGoalId, setDepositingGoalId] = useState(null); 
 
     // useEffect to load goals when the component mounts
     useEffect(() => {
-        // In a real app, you'd use async/await with fetch here
+     
         const fetchedGoals = getGoals();
         setGoals(fetchedGoals);
-    }, []); // Empty dependency array means this runs once on mount
+    }, []); 
 
     // Function to handle adding a new goal
     const handleAddGoal = (newGoal) => {

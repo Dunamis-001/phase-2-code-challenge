@@ -1,6 +1,6 @@
 import React from 'react';
 
-// OverviewDashboard receives the list of goals to calculate statistics
+
 const OverviewDashboard = ({ goals }) => {
     // Calculate total number of goals
     const totalGoals = goals.length;
@@ -51,7 +51,6 @@ const OverviewDashboard = ({ goals }) => {
                 </div>
             </div>
 
-            {/* Display time left for each active goal */}
             <h3>Goals Status</h3>
             <div className="goal-status-list">
                 {goals.map(goal => {

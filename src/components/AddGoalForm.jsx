@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-// AddGoalForm component receives an onSubmit function from its parent
+
 const AddGoalForm = ({ onAddGoal }) => {
     // State to hold form input values
     const [name, setName] = useState('');
@@ -22,7 +22,7 @@ const AddGoalForm = ({ onAddGoal }) => {
         const newGoal = {
             name,
             targetAmount: parseFloat(targetAmount), // Convert to number
-            savedAmount: 0, // New goals start with 0 saved
+            savedAmount: 0, 
             category,
             deadline,
             createdAt: new Date().toISOString().split('T')[0] // Current date

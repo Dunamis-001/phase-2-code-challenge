@@ -1,5 +1,3 @@
-// This file will simulate fetching and updating data
-// In a real application, you would use fetch() or axios for API calls
 
 const initialGoals = [
     {
@@ -62,7 +60,7 @@ const initialGoals = [
         "targetAmount": 1000,
         "savedAmount": 200,
         "category": "Shopping",
-        "deadline": "2024-08-10", // Deadline within 30 days and not complete
+        "deadline": "2024-08-10", 
         "createdAt": "2024-07-01"
     },
     {
@@ -94,38 +92,27 @@ const initialGoals = [
     }
 ];
 
-// In a real app, this would be your base URL
+
 const baseUrl = "http://http://localhost:3000/goals";
 
 // Function to get all goals (simulated)
 const getGoals = () => {
-    // In a real app:
-    // return fetch(baseUrl).then(res => res.json());
-    return initialGoals; // We're using the hardcoded data for now
+   
+    return initialGoals; 
 };
 
 // Function to add a new goal (simulated)
 const addGoal = (newGoal) => {
-    // In a real app:
-    // return fetch(baseUrl, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(newGoal)
-    // }).then(res => res.json());
+   
     const id = (initialGoals.length + 1).toString(); // Simple ID generation
     const goalToAdd = { ...newGoal, id, createdAt: new Date().toISOString().split('T')[0] };
     initialGoals.push(goalToAdd);
     return goalToAdd; // Return the added goal with its new ID
 };
 
-// Function to update an existing goal (simulated)
+
 const updateGoal = (id, updatedFields) => {
-    // In a real app:
-    // return fetch(`${baseUrl}/${id}`, {
-    //     method: 'PATCH', // Or PUT for full replacement
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(updatedFields)
-    // }).then(res => res.json());
+
 
     const goalIndex = initialGoals.findIndex(goal => goal.id === id);
     if (goalIndex > -1) {
@@ -137,14 +124,11 @@ const updateGoal = (id, updatedFields) => {
 
 // Function to delete a goal (simulated)
 const deleteGoal = (id) => {
-    // In a real app:
-    // return fetch(`${baseUrl}/${id}`, {
-    //     method: 'DELETE'
-    // }).then(res => res.ok); // Check if response was successful
+
 
     const initialLength = initialGoals.length;
     const newGoals = initialGoals.filter(goal => goal.id !== id);
-    // Simulate direct mutation of the array for simplicity, not ideal for large apps
+   
     initialGoals.length = 0; // Clear array
     initialGoals.push(...newGoals); // Repopulate with filtered goals
     return initialGoals.length < initialLength; // Return true if deleted

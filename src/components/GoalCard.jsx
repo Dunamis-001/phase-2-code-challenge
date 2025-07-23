@@ -1,6 +1,6 @@
 import React from 'react';
 
-// GoalCard component receives goal data and functions for actions
+
 const GoalCard = ({ goal, onEdit, onDelete, onDeposit }) => {
     // Calculate progress percentage
     const progress = (goal.savedAmount / goal.targetAmount) * 100;
@@ -42,7 +42,7 @@ const GoalCard = ({ goal, onEdit, onDelete, onDeposit }) => {
             <p>{progress.toFixed(2)}% Achieved</p>
             <p>Deadline: {goal.deadline} ({status})</p>
             <div className="goal-actions">
-                {/* Buttons trigger functions passed from parent */}
+               
                 <button onClick={() => onDeposit(goal.id)}>Make Deposit</button>
                 <button onClick={() => onEdit(goal)}>Edit Goal</button>
                 <button onClick={() => onDelete(goal.id)}>Delete Goal</button>

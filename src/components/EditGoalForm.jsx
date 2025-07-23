@@ -18,7 +18,7 @@ const EditGoalForm = ({ goalToEdit, onUpdateGoal, onCancelEdit }) => {
             setCategory(goalToEdit.category);
             setDeadline(goalToEdit.deadline);
         }
-    }, [goalToEdit]); // Dependency array: runs when goalToEdit changes
+    }, [goalToEdit]); // Dependency array - runs when goalToEdit changes
 
     // Handle form submission
     const handleSubmit = (e) => {

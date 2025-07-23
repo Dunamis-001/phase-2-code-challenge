@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 
-// DepositForm receives the goal to deposit into and an onSubmit function
 const DepositForm = ({ goalId, onMakeDeposit, onCancelDeposit }) => {
     // State to hold the deposit amount
     const [depositAmount, setDepositAmount] = useState('');
