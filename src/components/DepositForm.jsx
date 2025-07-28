@@ -1,51 +1,46 @@
+
+
 import React, { useState } from 'react';
 
-const DepositForm = ({ goalId, onMakeDeposit, onCancelDeposit }) => {
-    // State to hold the deposit amount
+function DepositForm({ goalId, goalName, onMakeDeposit, onCancelDeposit }) {
     const [depositAmount, setDepositAmount] = useState('');
 
-    // Handle form submission
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default form submission
 
-        // Convert deposit amount to a number
-        const amount = parseFloat(depositAmount);
-
-        // Basic validation
-        if (isNaN(amount) || amount <= 0) {
-            alert('Please enter a valid positive deposit amount.');
+        // validation 
+        if (parseFloat(depositAmount) <= 0 || isNaN(parseFloat(depositAmount))) {
+            alert("Deposit amount must be a positive number.");
             return;
         }
 
-        // Call the parent's function to make the deposit
-        onMakeDeposit(goalId, amount);
-
-        // Clear the input field
-        setDepositAmount('');
+        onMakeDeposit(goalId, depositAmount); // Pass goal ID and deposit amount 
+        setDepositAmount(''); // Clear the input field after deposit
     };
 
     return (
-        <div className="form-container">
-            <h2>Make Deposit</h2>
+        <div className="form-container"> 
+            <h2>Deposit to {goalName}</h2>
             <form onSubmit={handleSubmit}>
-                <label>
-                    Amount to Deposit:
+                <div className="form-group"> 
+                    <label htmlFor="deposit-amount">Amount:</label>
                     <input
                         type="number"
+                        id="deposit-amount"
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
                         required
-                        min="0.01" // Minimum deposit
-                        step="0.01" // Allow decimal values
+                        min="0.01" // Ensure a positive deposit
+                        step="0.01" // Allow decimal amounts
                     />
-                </label>
-                <div className="form-actions">
-                    <button type="submit">Deposit</button>
-                    <button type="button" onClick={onCancelDeposit}>Cancel</button>
+                </div>
+                <div className="form-actions"> 
+                    <button type="submit" className="btn btn-primary">Make Deposit</button> 
+                    <button type="button" onClick={onCancelDeposit} className="btn btn-cancel">Cancel</button> 
                 </div>
             </form>
         </div>
     );
-};
+}
 
 export default DepositForm;

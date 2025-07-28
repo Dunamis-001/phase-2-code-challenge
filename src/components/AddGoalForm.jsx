@@ -1,37 +1,39 @@
 import React, { useState } from 'react';
 
-
-const AddGoalForm = ({ onAddGoal }) => {
-    // State to hold form input values
+function AddGoalForm({ onAddGoal }) {
+    // State for each input field in the form
     const [name, setName] = useState('');
     const [targetAmount, setTargetAmount] = useState('');
     const [category, setCategory] = useState('');
     const [deadline, setDeadline] = useState('');
 
-    // Handle form submission
     const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent default form refresh
+        e.preventDefault(); // prevent page reload
 
-        // Basic validation
+        // Validation
         if (!name || !targetAmount || !category || !deadline) {
-            alert('Please fill in all fields.');
+            alert("Please fill in all fields.");
+            return;
+        }
+        if (parseFloat(targetAmount) <= 0) {
+            alert("Target amount must be greater than zero.");
             return;
         }
 
-        // Create a new goal object
+       
         const newGoal = {
+            id: Date.now(), 
             name,
             targetAmount: parseFloat(targetAmount), // Convert to number
-            savedAmount: 0, 
+            savedAmount: 0, // New goals always start with 0 saved
             category,
             deadline,
-            createdAt: new Date().toISOString().split('T')[0] // Current date
+            createdAt: new Date().toISOString().split('T')[0] // Current date 
         };
 
-        // Call the parent's function to add the goal
-        onAddGoal(newGoal);
-
-        // Clear the form fields after submission
+        onAddGoal(newGoal); 
+        
+        // Clear the form fields after successful submission
         setName('');
         setTargetAmount('');
         setCategory('');
@@ -39,50 +41,57 @@ const AddGoalForm = ({ onAddGoal }) => {
     };
 
     return (
-        <div className="form-container">
+        <div className="form-container"> 
             <h2>Add New Goal</h2>
             <form onSubmit={handleSubmit}>
-                <label>
-                    Goal Name:
+                <div className="form-group"> 
+                    <label htmlFor="name">Goal Name:</label>
                     <input
                         type="text"
+                        id="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
-                </label>
-                <label>
-                    Target Amount:
+                </div>
+                <div className="form-group"> 
+                    <label htmlFor="targetAmount">Target Amount:</label>
                     <input
                         type="number"
+                        id="targetAmount"
                         value={targetAmount}
                         onChange={(e) => setTargetAmount(e.target.value)}
                         required
-                        min="0"
+                        min="0.01" // Ensure amount is positive
+                        step="0.01" // Allow decimal amounts
                     />
-                </label>
-                <label>
-                    Category:
+                </div>
+                <div className="form-group"> 
+                    <label htmlFor="category">Category:</label>
                     <input
                         type="text"
+                        id="category"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                         required
                     />
-                </label>
-                <label>
-                    Deadline:
+                </div>
+                <div className="form-group"> 
+                    <label htmlFor="deadline">Deadline:</label>
                     <input
                         type="date"
+                        id="deadline"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
                         required
                     />
-                </label>
-                <button type="submit">Add Goal</button>
+                </div>
+                <div className="form-actions"> 
+                    <button type="submit" className="btn btn-primary">Add Goal</button> 
+                </div>
             </form>
         </div>
     );
-};
+}
 
 export default AddGoalForm;

@@ -1,96 +1,102 @@
+
+
 import React, { useState, useEffect } from 'react';
 
-// EditGoalForm receives the goal to edit and an onSubmit function
-const EditGoalForm = ({ goalToEdit, onUpdateGoal, onCancelEdit }) => {
-    // State to hold form values, initialized with goalToEdit data
-    const [id, setId] = useState('');
-    const [name, setName] = useState('');
-    const [targetAmount, setTargetAmount] = useState('');
-    const [category, setCategory] = useState('');
-    const [deadline, setDeadline] = useState('');
+function EditGoalForm({ goalToEdit, onUpdateGoal, onCancelEdit }) {
+    
+    const [name, setName] = useState(goalToEdit.name);
+    const [targetAmount, setTargetAmount] = useState(goalToEdit.targetAmount);
+    const [category, setCategory] = useState(goalToEdit.category);
+    const [deadline, setDeadline] = useState(goalToEdit.deadline);
 
-    // useEffect hook to update form fields when goalToEdit changes
+    // useEffect to update form fields if a different goal is selected for editing
+    
     useEffect(() => {
         if (goalToEdit) {
-            setId(goalToEdit.id);
             setName(goalToEdit.name);
             setTargetAmount(goalToEdit.targetAmount);
             setCategory(goalToEdit.category);
             setDeadline(goalToEdit.deadline);
         }
-    }, [goalToEdit]); // Dependency array - runs when goalToEdit changes
+    }, [goalToEdit]);
 
-    // Handle form submission
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default form submission
 
-        // Basic validation
+        // validation
         if (!name || !targetAmount || !category || !deadline) {
-            alert('Please fill in all fields.');
+            alert("Please fill in all fields.");
+            return;
+        }
+        if (parseFloat(targetAmount) <= 0) {
+            alert("Target amount must be greater than zero.");
             return;
         }
 
-        // Create an object with updated fields
-        const updatedGoal = {
-            id,
+        // object with only the fields that can be updated
+        const updatedFields = {
             name,
-            targetAmount: parseFloat(targetAmount),
+            targetAmount: parseFloat(targetAmount), // Convert to number
             category,
-            deadline
+            deadline,
         };
-
-        // Call the parent's update function
-        onUpdateGoal(updatedGoal);
+        // Pass the goal ID and updated fields 
+        onUpdateGoal(goalToEdit.id, updatedFields);
     };
 
     return (
-        <div className="form-container">
+        <div className="form-container"> 
             <h2>Edit Goal</h2>
             <form onSubmit={handleSubmit}>
-                <label>
-                    Goal Name:
+                <div className="form-group"> 
+                    <label htmlFor="edit-name">Goal Name:</label>
                     <input
                         type="text"
+                        id="edit-name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
-                </label>
-                <label>
-                    Target Amount:
+                </div>
+                <div className="form-group"> 
+                    <label htmlFor="edit-targetAmount">Target Amount:</label>
                     <input
                         type="number"
+                        id="edit-targetAmount"
                         value={targetAmount}
                         onChange={(e) => setTargetAmount(e.target.value)}
                         required
-                        min="0"
+                        min="0.01"
+                        step="0.01"
                     />
-                </label>
-                <label>
-                    Category:
+                </div>
+                <div className="form-group"> 
+                    <label htmlFor="edit-category">Category:</label>
                     <input
                         type="text"
+                        id="edit-category"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                         required
                     />
-                </label>
-                <label>
-                    Deadline:
+                </div>
+                <div className="form-group"> 
+                    <label htmlFor="edit-deadline">Deadline:</label>
                     <input
                         type="date"
+                        id="edit-deadline"
                         value={deadline}
                         onChange={(e) => setDeadline(e.target.value)}
                         required
                     />
-                </label>
-                <div className="form-actions">
-                    <button type="submit">Update Goal</button>
-                    <button type="button" onClick={onCancelEdit}>Cancel</button>
+                </div>
+                <div className="form-actions"> 
+                    <button type="submit" className="btn btn-primary">Update Goal</button> 
+                    <button type="button" onClick={onCancelEdit} className="btn btn-cancel">Cancel</button> 
                 </div>
             </form>
         </div>
     );
-};
+}
 
 export default EditGoalForm;

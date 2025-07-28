@@ -5,90 +5,147 @@ import AddGoalForm from './components/AddGoalForm';
 import EditGoalForm from './components/EditGoalForm';
 import DepositForm from './components/DepositForm';
 import OverviewDashboard from './components/OverviewDashboard';
-
-import './App.css'; // Import the CSS file
+import './App.css'; 
 
 function App() {
- 
+    
     const [goals, setGoals] = useState([]);
-    // State to control which form is visible for editing
-    const [editingGoal, setEditingGoal] = useState(null); 
-    // State to control which form is visible for depositing
-    const [depositingGoalId, setDepositingGoalId] = useState(null); 
 
-    // useEffect to load goals when the component mounts
+    const [loading, setLoading] = useState(true);
+    
+    const [error, setError] = useState(null);
+
+    const [editingGoal, setEditingGoal] = useState(null);
+  
+    const [depositingGoalId, setDepositingGoalId] = useState(null);
+
+    // useEffect hook to fetch all goals
     useEffect(() => {
-     
-        const fetchedGoals = getGoals();
-        setGoals(fetchedGoals);
+        setLoading(true); 
+        setError(null);   
+        getGoals()
+            .then(fetchedGoals => {
+                // If fetchedGoals is null, an error occurred in goalService
+                if (fetchedGoals === null) {
+                    setError("Failed to load goals. Please ensure json-server is running.");
+                } else {
+                    setGoals(fetchedGoals); // Update goals state with fetched data
+                }
+            })
+           
+            .finally(() => {
+                setLoading(false); 
+            });
     }, []); 
 
-    // Function to handle adding a new goal
-    const handleAddGoal = (newGoal) => {
-        const added = addGoal(newGoal);
-        setGoals([...goals, added]); // Add the new goal to the existing list
+    const handleAddGoal = (newGoalData) => {
+        addGoal(newGoalData)
+            .then(addedGoal => {
+               
+                if (addedGoal === null) {
+                    setError("Failed to add goal.");
+                } else {
+                    setGoals((prevGoals) => [...prevGoals, addedGoal]); // Add new goal to the list
+                    setEditingGoal(null);    
+                    setDepositingGoalId(null); 
+                }
+            })
+            .catch(err => {
+                setError("An unexpected error occurred while adding goal.");
+                console.error("Unexpected error adding goal in App:", err);
+            });
     };
 
-    // Function to handle updating an existing goal
-    const handleUpdateGoal = (updatedGoal) => {
-        const updated = updateGoal(updatedGoal.id, updatedGoal);
-        if (updated) {
-            setGoals(goals.map(goal => goal.id === updated.id ? updated : goal));
-            setEditingGoal(null); // Exit edit mode
-        } else {
-            alert('Could not update goal.');
-        }
+    
+    const handleUpdateGoal = (id, updatedFields) => {
+        updateGoal(id, updatedFields)
+            .then(updated => {
+             
+                if (updated === null) {
+                    setError("Failed to update goal.");
+                } else {
+                    // Update the specific goal in the goals list
+                    setGoals(goals.map(goal => goal.id === updated.id ? updated : goal));
+                    setEditingGoal(null); 
+                }
+            })
+            .catch(err => {
+                setError("An unexpected error occurred while updating goal.");
+                console.error("Unexpected error updating goal in App:", err);
+            });
     };
 
-    // Function to handle deleting a goal
+   
     const handleDeleteGoal = (id) => {
+       
         if (window.confirm('Are you sure you want to delete this goal?')) {
-            const isDeleted = deleteGoal(id);
-            if (isDeleted) {
-                setGoals(goals.filter(goal => goal.id !== id));
-            } else {
-                alert('Could not delete goal.');
-            }
+            deleteGoal(id)
+                .then(isDeleted => {
+                   
+                    if (isDeleted === false) {
+                        setError('Failed to delete goal.');
+                    } else {
+                        // Remove the deleted goal from the list
+                        setGoals(goals.filter(goal => goal.id !== id));
+                    }
+                })
+                .catch(err => {
+                    setError("An unexpected error occurred while deleting goal.");
+                    console.error("Unexpected error deleting goal in App:", err);
+                });
         }
     };
 
-    // Function to handle making a deposit
+
     const handleMakeDeposit = (id, amount) => {
         const goalToUpdate = goals.find(goal => goal.id === id);
         if (goalToUpdate) {
-            const newSavedAmount = goalToUpdate.savedAmount + amount;
-            const updated = updateGoal(id, { savedAmount: newSavedAmount });
-            if (updated) {
-                setGoals(goals.map(goal => goal.id === updated.id ? updated : goal));
-                setDepositingGoalId(null); // Exit deposit mode
-            } else {
-                alert('Could not make deposit.');
-            }
+            // Calculate the new saved amount
+            const newSavedAmount = goalToUpdate.savedAmount + parseFloat(amount);
+            updateGoal(id, { savedAmount: newSavedAmount })
+                .then(updated => {
+                   
+                    if (updated === null) {
+                        setError("Failed to make deposit.");
+                    } else {
+                        // Update the goal with the new saved amount
+                        setGoals(goals.map(goal => goal.id === updated.id ? updated : goal));
+                        setDepositingGoalId(null); 
+                    }
+                })
+            
         }
     };
 
-    // Function to set the goal being edited
+  
     const startEditing = (goal) => {
-        setEditingGoal(goal);
-        setDepositingGoalId(null); // Close deposit form if open
+        setEditingGoal(goal);      // Set the goal to be edited
+        setDepositingGoalId(null); 
     };
 
-    // Function to cancel editing
     const cancelEditing = () => {
-        setEditingGoal(null);
+        setEditingGoal(null); // Clear editing state
     };
 
-    // Function to set the goal for deposit
     const startDepositing = (id) => {
-        setDepositingGoalId(id);
-        setEditingGoal(null); // Close edit form if open
+        setDepositingGoalId(id);   // Set the goal ID for deposit
+        setEditingGoal(null);     
     };
 
-    // Function to cancel depositing
     const cancelDepositing = () => {
-        setDepositingGoalId(null);
+        setDepositingGoalId(null); // Clear depositing state
     };
 
+    
+    // Show loading message if data is still being fetched
+    if (loading) {
+        return <div className="App"><p>Loading goals... Please ensure json-server is running.</p></div>;
+    }
+
+ 
+
+    // Find the goal currently selected for deposit, if any
+    const currentDepositingGoal = goals.find(goal => goal.id === depositingGoalId);
 
     return (
         <div className="App">
@@ -96,31 +153,38 @@ function App() {
 
             <OverviewDashboard goals={goals} />
 
-            {/* Conditionally render forms based on state */}
+            <hr /> 
+
+           
             {editingGoal ? (
                 <EditGoalForm
                     goalToEdit={editingGoal}
                     onUpdateGoal={handleUpdateGoal}
                     onCancelEdit={cancelEditing}
                 />
-            ) : depositingGoalId ? (
+            ) : depositingGoalId && currentDepositingGoal ? (
                 <DepositForm
                     goalId={depositingGoalId}
+                    goalName={currentDepositingGoal.name}
                     onMakeDeposit={handleMakeDeposit}
                     onCancelDeposit={cancelDepositing}
                 />
             ) : (
+                
                 <AddGoalForm onAddGoal={handleAddGoal} />
             )}
 
+            <hr /> 
+
             <h2>Your Savings Goals</h2>
-            {/* Pass goals and action functions to GoalList */}
             <GoalList
                 goals={goals}
                 onEditGoal={startEditing}
                 onDeleteGoal={handleDeleteGoal}
                 onDepositToGoal={startDepositing}
             />
+
+            {goals.length === 0 && !loading && !error && <p>No goals yet! Add a new goal to get started.</p>}
         </div>
     );
 }
